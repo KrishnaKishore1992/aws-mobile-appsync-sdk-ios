@@ -86,6 +86,7 @@ final class AWSPerformMutationQueue {
 
         operation.operationCompletionBlock = { [weak self] operation, error in
             guard let identifier = operation.identifier else { return }
+            self?.appSyncClient?.offlineMutationDelegate?.mutationCallback(recordIdentifier: identifier, operationString: identifier, snapshot: nil, error: error)
             self?.deleteOfflineMutation(withIdentifier: identifier)
         }
 
