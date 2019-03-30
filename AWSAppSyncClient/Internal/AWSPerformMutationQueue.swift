@@ -137,7 +137,6 @@ final class AWSPerformMutationQueue {
                 operationQueue.addOperation(operation)
                 AppSyncLog.verbose("\(mutation.recordIdentifier) loaded")
             }
-            appSyncClient?.offlineMutationDelegate?.mutationCallback(recordIdentifier: "identifier", operationString: "identifier", snapshot: nil, error: nil)
         } catch {
             AppSyncLog.error("Error retrieving offline mutation from storage: \(error)")
         }
