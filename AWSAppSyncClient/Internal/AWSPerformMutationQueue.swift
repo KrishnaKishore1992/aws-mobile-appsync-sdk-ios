@@ -86,7 +86,6 @@ final class AWSPerformMutationQueue {
 
         operation.operationCompletionBlock = { [weak self] operation, error in
             guard let identifier = operation.identifier else { return }
-            self?.appSyncClient?.offlineMutationDelegate?.mutationCallback(recordIdentifier: identifier, operationString: identifier, snapshot: nil, error: error)
             self?.deleteOfflineMutation(withIdentifier: identifier)
         }
 
@@ -138,6 +137,7 @@ final class AWSPerformMutationQueue {
                 operationQueue.addOperation(operation)
                 AppSyncLog.verbose("\(mutation.recordIdentifier) loaded")
             }
+            appSyncClient?.offlineMutationDelegate?.mutationCallback(recordIdentifier: "identifier", operationString: "identifier", snapshot: nil, error: nil)
         } catch {
             AppSyncLog.error("Error retrieving offline mutation from storage: \(error)")
         }
@@ -178,6 +178,7 @@ final class AWSPerformMutationQueue {
     }
 
     private func deleteOfflineMutation(withIdentifier identifier: String) {
+        appSyncClient?.offlineMutationDelegate?.mutationCallback(recordIdentifier: identifier, operationString: identifier, snapshot: nil, error: nil)
         persistentCache?
             .deleteMutationRecord(withIdentifier: identifier)
             .catch { error in AppSyncLog.error("\(#function) failure: \(error)") }
