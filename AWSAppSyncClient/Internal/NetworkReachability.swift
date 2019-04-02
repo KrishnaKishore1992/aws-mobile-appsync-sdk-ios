@@ -47,7 +47,7 @@ class NetworkReachabilityNotifier {
     private var reachability: NetworkReachabilityProviding?
     private var allowsCellularAccess = true
     private var isInitialConnection = true
-
+    private let semaphore = DispatchSemaphore(value: 1)
     /// A list of watchers to be notified when the network status changes
     private var networkReachabilityWatchers: [NetworkReachabilityWatcher] = []
 
@@ -131,16 +131,22 @@ class NetworkReachabilityNotifier {
     /// Adds a new item to the list of watchers to be notified in case of a network reachability change
     ///
     /// - Parameter watcher: The watcher to add
+    
+    //Modified:- Krishna Kishore: Identified crash at objc_sync_enter. when Appsync is initializing when user session is logged out and trying to login again. So to achive sync functionality we used semaphore
     func add(watcher: NetworkReachabilityWatcher) {
-        objc_sync_enter(networkReachabilityWatchers)
+        //        objc_sync_enter(networkReachabilityWatchers)
+        semaphore.wait()
         networkReachabilityWatchers.append(watcher)
-        objc_sync_exit(networkReachabilityWatchers)
+        semaphore.signal()
+        //        objc_sync_exit(networkReachabilityWatchers)
     }
 
     private func clearWatchers() {
-        objc_sync_enter(networkReachabilityWatchers)
+        //        objc_sync_enter(networkReachabilityWatchers)
+        semaphore.wait()
         networkReachabilityWatchers = []
-        objc_sync_exit(networkReachabilityWatchers)
+        semaphore.signal()
+        //        objc_sync_exit(networkReachabilityWatchers)
     }
 
     // MARK: - Notifications
